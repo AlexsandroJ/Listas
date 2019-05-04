@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct no{
+    int elemento;
+    struct no* next;
+}no;
+
+typedef struct fila{
+    struct no* head;
+    struct no* tail;
+}fila;
+
+fila* criar_fila(){
+    fila* f;
+    f = (fila*)calloc(1,sizeof(fila));
+    f->head = (no*)calloc(1,sizeof(no));
+    f->tail = (no*)calloc(1,sizeof(no));
+    return f;
+}
+
+int primeiro_da_fila(fila* f){
+    return f->head->next->elemento;
+}
+
+void adicionar_na_fila(fila* f, int elemento){
+    no* cur = f->head;
+    if( cur->next == NULL){
+        cur->next = (no*)calloc(1,sizeof(no));
+        cur->next->elemento = elemento;
+        f->tail = cur->next;
+    }else{
+        cur = f->tail;
+        cur->next = (no*)calloc(1,sizeof(no));
+        cur->next->elemento = elemento;
+        f->tail = cur->next;
+    }
+}
+
+void retirar_da_fila(fila* f){
+    no* primeiro = f->head->next;
+    f->head->next = primeiro->next;
+    free(primeiro);
+}
+
+typedef struct pilha{
+    struct no* head;
+}pilha;
+
+pilha* criar_pilha(){
+    pilha* p;
+    p = (pilha*)calloc(1,sizeof(pilha));
+    p->head = (no*)calloc(1,sizeof(no));
+    return p;
+}
+
+void empilhar(pilha* p, int elemento){
+    no* novo;
+    novo = (no*)calloc(1,sizeof(no));
+    novo->elemento = elemento;
+    novo->next = p->head->next;
+    p->head->next = novo;
+}
+
+int topo_da_pilha(pilha* p){
+    return p->head->next->elemento;
+}
+
+void desempilhar(pilha* p){
+    no* cur = p->head;
+    if( cur->next != NULL){
+        cur = cur->next;
+        p->head->next = cur->next;
+        free(cur);
+    }
+}
+
+int main() {
+    
+    int m,x,id;
+    char comando[4];
+    scanf(" %d",&m);
+    pilha** p;
+    fila** f;
+    p = malloc(m*sizeof(pilha*));
+    f = malloc(m*sizeof(fila*));
+    for( x = 0; x < m ; x++){
+        
+        p[x] = criar_pilha();
+        f[x] = criar_fila();
+    }
+
+    while( comando[0] != 'E' && comando[1] != 'N' && comando[2] != 'D' ){
+        
+        scanf(" %s %d",comando,&id);
+        
+        if( comando[0] == 'N' && comando[1] == 'E' && comando[2] == 'W' )
+        {
+            adicionar_na_fila(f[0],id);
+            
+        }else if( comando[0] == 'M' && comando[1] == 'O' && comando[2] == 'V' )
+        {
+            adicionar_na_fila(f[id], primeiro_da_fila(f[0]) );
+            retirar_da_fila(f[0]);
+            
+        }else if(  comando[0] == 'D' && comando[1] == 'E' && comando[2] == 'F' )
+        {
+            empilhar(p[id], primeiro_da_fila(f[id]) );
+            retirar_da_fila(f[id]);
+            
+        }else if(  comando[0] == 'F' && comando[1] == 'I' && comando[2] == 'X' )
+        {
+            adicionar_na_fila(f[id], topo_da_pilha(p[id]) );
+            desempilhar(p[id]);
+            
+        }else if( comando[0] == 'T' && comando[1] == 'S' && comando[2] == 'H' )
+        {
+            printf("%d BAD\n", topo_da_pilha(p[id]) );
+            desempilhar(p[id]);
+            
+        }else if( comando[0] == 'R' && comando[1] == 'D' && comando[2] == 'Y')
+        {
+            printf("%d OK\n",primeiro_da_fila(f[id]) );
+            retirar_da_fila(f[id]);
+        }
+    }
+    return 0;
+}

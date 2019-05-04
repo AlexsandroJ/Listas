@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1551452491 source:c:\users\alex\desktop\paguso\lista\main.c
+	"lista.h"
+
+1551452623 source:c:\users\alex\desktop\paguso\lista\lista.c
+	"lista.h"
+
+1551452005 c:\users\alex\desktop\paguso\lista\lista.h
+	<stdio.h>
+	<stdlib.h>
+

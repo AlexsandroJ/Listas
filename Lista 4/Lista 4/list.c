@@ -131,6 +131,8 @@ void show_heap( heap heap){
 
         }break;
     }
+
+    printf("\n");
 }
 
 void swap(Agente* Agente1, Agente* Agente2, int ID1, int ID2){
@@ -300,19 +302,21 @@ int bubble_up(heap *heap, int ID){
     }
 }
 
-int Insert_heap( heap *heap,  Agente Agentes){
+int Insert_heap( heap *heaps,  Agente Agentes){
 	
-	if( heap->total >= Tam_Rips)
+	if( heaps->total >= Tam_Rips)
 		printf("OVERFLOW\n");
 
 	else{
 		
-		heap->total += 1;
-		//printf("%d\n",heap->total);
-		heap->Agentes[heap->total] = Agentes;
+		heaps->total += 1;
+        
+		//printf("\n\tTotal na Heap:%d\n",heaps->total);
+		heaps->Agentes[heaps->total] = Agentes;
 
-		return bubble_up(heap, heap->total);
+		return bubble_up(heaps, heaps->total);
 	}
+    
 }
 
 void bubble_down(heap *heap, int ID){
@@ -350,22 +354,23 @@ void bubble_down(heap *heap, int ID){
     }
 }
 
-int Remove_da_heap( heap* heap, int ID){
-    Agente Agente;
+int Remove_da_heap( heap* heaps, int ID){
+    Agente Agentes;
     int ID_Che;
-    if( ID > heap->total){
-        return ID;
+    if( ID > heaps->total){
+        return -1;
     }else {
 
         if( Agentes_ID[ID].ID == ID ){
 
-            heap->Agentes[ID] = heap->Agentes[heap->total];
-            heap->Agentes[heap->total] = Agente;// apagar
-            heap->total -=1;
-            ID_Che = bubble_up(heap, ID);
+            heaps->Agentes[ID] = heaps->Agentes[heaps->total];
+            heaps->Agentes[heaps->total] = Agentes;// apagar
+            heaps->total -=1;
+            //printf("\t\tTotal %d",heaps->total);
+            ID_Che = bubble_up(heaps, ID);
             if( ID_Che == ID){
                 //printf("\tDencendo\n");
-                bubble_down(heap, ID);
+                bubble_down(heaps, ID);
             }
             
             return ID;
@@ -402,8 +407,7 @@ int main(){
     
     scanf("%d",&S);
     heaps = (heap*)malloc(S*sizeof(heap));
-    heaps->total = 0;
-
+    
     for( i = 0; i < S ; i++){
         scanf(" %d %d ",&Q, &P);
         heaps[i].function = P;
@@ -433,6 +437,7 @@ int main(){
 
     do{
         scanf(" %s",Op);
+        //printf("\n\t\t\tEssa porra:%d \n",heaps[   1 ].total);
         if( strcmp(Op, "ADD") == 0 ){
             scanf(" %d %d %d %d",&Agentes.Esquad, &Agentes.ID, &Agentes.T, &Agentes.R);
 
@@ -449,7 +454,7 @@ int main(){
                 ID = Agentes_ID[ Agentes.ID  ].ID_Heap;
                 UDP( &heaps[Agentes.Esquad],ID, Agentes );
             }
-            
+        
             printf("%d %d %d\n",
                 heaps[   Agentes.Esquad ].Agentes[   1  ].ID,
                 heaps[   Agentes.Esquad ].Agentes[   1  ].T,
@@ -476,15 +481,12 @@ int main(){
 
                 Agente Agentes_i;
                 Agentes_i = heaps[   Esqu_i ].Agentes[   1  ];
-                //show_heap(heaps[Esqu_i]);
-
+               
                 Remove_da_heap( &heaps[Esqu_i], 1 );
                 
                 ID = Insert_heap(&heaps[Esqu_j],Agentes_i);
                 Agentes_ID[ Agentes_i.ID  ].Esquad =  Esqu_j;
                 Agentes_ID[ Agentes_i.ID  ].ID_Heap =  ID;
-
-                //show_heap(heaps[Esqu_i]);
 
                 if( heaps[   Esqu_i ].total > 0 ){
 
@@ -511,7 +513,7 @@ int main(){
             
             Agente Agentes_i;  
             
-            for( i = 0 ; i < Q ; i++){
+            for( i = 0 ; i < Q && heaps[   Esqu_i ].total >= 0 ; i++){
 
                 Agentes_i = heaps[   Esqu_i ].Agentes[   1  ];
                
@@ -522,11 +524,23 @@ int main(){
                 Agentes_ID[ Agentes_i.ID  ].ID_Heap =  ID;
 
             }
-            heaps[Esqu_i].function = P;
+            
+            
+            if( heaps[Esqu_i].function != P ){
+
+                heaps[Esqu_i].function = P;
+
+                for( i = heaps[   Esqu_i ].total ; i >= 1 ; i-- ){
+                        printf("\t\tfoi\n");
+                    ID = bubble_up(&heaps[   Esqu_i ], i  );
+                    Agentes_ID[ heaps[   Esqu_i ].Agentes[   i  ].ID ].ID_Heap =  ID;
+
+                }
+            }
 
             if( heaps[   Esqu_i ].total > 0 ){
+               
                 
-
                 printf("%d %d %d ",
                 heaps[   Esqu_i ].Agentes[   1  ].ID,
                 heaps[   Esqu_i ].Agentes[   1  ].T,
@@ -536,8 +550,6 @@ int main(){
                 printf("-1 -1 -1 ");
 
             }
-            
-
             printf("%d %d %d\n",
                 heaps[   Esqu_j ].Agentes[   1  ].ID,
                 heaps[   Esqu_j ].Agentes[   1  ].T,
@@ -566,6 +578,6 @@ int main(){
 
     }while( strcmp(Op, "END") != 0 );
     
-    //show_heap(heaps[Agentes_ID[32].Esquad]);
+    //show_heap(heaps[]);
     return 0;
 }

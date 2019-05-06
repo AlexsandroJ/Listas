@@ -331,29 +331,30 @@ void bubble_down(heap *heap, int ID){
         
         if( Criterio == -1 ){
             
-            Criterio = function_heap( heap->function, heap->Agentes[ ID ], heap->Agentes[ ID_Filho1 ]);
+            Criterio = function_heap( heap->function, heap->Agentes[ ID ], heap->Agentes[ ID_Filho2 ]);
             min_ou_max_ID = ID_Filho2;
 
             
         }else if( Criterio != -1){
 
-            Criterio = function_heap( heap->function, heap->Agentes[ ID ], heap->Agentes[ ID_Filho2 ]);
+            Criterio = function_heap( heap->function, heap->Agentes[ ID ], heap->Agentes[ ID_Filho1 ]);
             min_ou_max_ID = ID_Filho1;
         }
 
         if( Criterio == -1){
 
             swap( &heap->Agentes[ID] , &heap->Agentes[min_ou_max_ID] , ID, min_ou_max_ID);
-            
+            //printf("\tTrocando\n");
             bubble_down( heap, min_ou_max_ID );
         }
     }
 }
 
-void Remove_da_heap( heap* heap, int ID){
+int Remove_da_heap( heap* heap, int ID){
     Agente Agente;
+    int ID_Che;
     if( ID > heap->total){
-        return;
+        return ID;
     }else {
 
         if( Agentes_ID[ID].ID == ID ){
@@ -361,9 +362,17 @@ void Remove_da_heap( heap* heap, int ID){
             heap->Agentes[ID] = heap->Agentes[heap->total];
             heap->Agentes[heap->total] = Agente;// apagar
             heap->total -=1;
-            bubble_up(heap, ID);
-            bubble_down(heap, ID);
+            ID_Che = bubble_up(heap, ID);
+            if( ID_Che == ID){
+                //printf("\tDencendo\n");
+                bubble_down(heap, ID);
+            }
+            
+            return ID;
 
+        }else{
+
+            return -1;
         }
     }
 }
@@ -436,7 +445,7 @@ int main(){
                 Agentes_ID[ Agentes.ID  ].ID_Heap =  ID;
 
             }else{
-                printf("asdsadsad");
+                
                 ID = Agentes_ID[ Agentes.ID  ].ID_Heap;
                 UDP( &heaps[Agentes.Esquad],ID, Agentes );
             }
@@ -477,10 +486,17 @@ int main(){
 
                 //show_heap(heaps[Esqu_i]);
 
-                printf("%d %d %d ",
+                if( heaps[   Esqu_i ].total > 0 ){
+
+                    printf("%d %d %d ",
                     heaps[   Esqu_i ].Agentes[   1  ].ID,
                     heaps[   Esqu_i ].Agentes[   1  ].T,
                     heaps[   Esqu_i ].Agentes[   1  ].R);
+
+                }else{
+                    printf("-1 -1 -1 ");
+
+                }
 
                 printf("%d %d %d\n",
                     heaps[   Esqu_j ].Agentes[   1  ].ID,
@@ -490,14 +506,44 @@ int main(){
                 
                         
         }else if( strcmp(Op, "CHG") == 0 ){
-        
+            
             scanf(" %d %d %d %d", &Esqu_i, &Esqu_j, &Q, &P);
+            
+            Agente Agentes_i;  
+            
             for( i = 0 ; i < Q ; i++){
 
-                //Agentes = heap_Max(&heaps[Esqu_i]);
-                Insert_heap(&heaps[Esqu_j], Agentes);
+                Agentes_i = heaps[   Esqu_i ].Agentes[   1  ];
+               
+                Remove_da_heap( &heaps[Esqu_i], 1 );
+                
+                ID = Insert_heap(&heaps[Esqu_j],Agentes_i);
+                Agentes_ID[ Agentes_i.ID  ].Esquad =  Esqu_j;
+                Agentes_ID[ Agentes_i.ID  ].ID_Heap =  ID;
 
             }
+            heaps[Esqu_i].function = P;
+
+            if( heaps[   Esqu_i ].total > 0 ){
+                
+
+                printf("%d %d %d ",
+                heaps[   Esqu_i ].Agentes[   1  ].ID,
+                heaps[   Esqu_i ].Agentes[   1  ].T,
+                heaps[   Esqu_i ].Agentes[   1  ].R);
+
+            }else{
+                printf("-1 -1 -1 ");
+
+            }
+            
+
+            printf("%d %d %d\n",
+                heaps[   Esqu_j ].Agentes[   1  ].ID,
+                heaps[   Esqu_j ].Agentes[   1  ].T,
+                heaps[   Esqu_j ].Agentes[   1  ].R);
+
+
             // Atualizar Criterio de Pioridade de  Esqu_i para P
         }else if( strcmp(Op, "KIA") == 0 ){
 
@@ -520,6 +566,6 @@ int main(){
 
     }while( strcmp(Op, "END") != 0 );
     
-    show_heap(heaps[Agentes_ID[5].Esquad]);
+    //show_heap(heaps[Agentes_ID[32].Esquad]);
     return 0;
 }

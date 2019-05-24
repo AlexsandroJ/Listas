@@ -303,23 +303,23 @@ int Insert_heap( heap *heap,  Agente Agentes){
 
 void bubble_down(heap *heap, int ID){
 
-    if( heap->total > ID ){
-
-        int ID_Filho1, ID_Filho2; 
+    int ID_Filho1, ID_Filho2; 
         
-        int min_ou_max_ID; 
+    int min_ou_max_ID; 
 
-        ID_Filho1 = 2*ID;
-        ID_Filho2 = ID_Filho1 + 1;
+    ID_Filho1 = 2*ID;
+    ID_Filho2 = ID_Filho1 + 1;
+    
+    int Criterio;
 
-       
-        int Criterio = function_heap( heap->function, heap->Agentes[ ID_Filho1 ], heap->Agentes[ ID_Filho2 ]);
-        
+    if( ID*2 < heap->total   ){
+
+        Criterio = function_heap( heap->function, heap->Agentes[ ID_Filho1 ], heap->Agentes[ ID_Filho2 ]);
+
         if( Criterio == -1 ){
             
             Criterio = function_heap( heap->function, heap->Agentes[ ID ], heap->Agentes[ ID_Filho2 ]);
             min_ou_max_ID = ID_Filho2;
-
             
         }else if( Criterio != -1){
 
@@ -334,15 +334,29 @@ void bubble_down(heap *heap, int ID){
             
             bubble_down( heap, min_ou_max_ID );
             
+        }
+    }else if(ID < heap->total){
+
+        Criterio = function_heap( heap->function, heap->Agentes[ 1 ], heap->Agentes[ 2 ]);
+
+        if( Criterio == -1){
+
+            swap( &heap->Agentes[1] , &heap->Agentes[2] , 1, 2);
+            //printf("\tTrocando\n");
+            
+            //bubble_down( heap, min_ou_max_ID );
             
         }
-    }else{
-        
     }
 }
 
 int Remove_da_heap( heap* heap, int ID){
     Agente Agente;
+    Agente.ID = -2;
+    Agente.Esquad = -2;
+    Agente.R= -2;
+    Agente.T = -2;
+
     int ID_Che;
     if( ID > heap->total){
         return ID;
@@ -486,12 +500,12 @@ int main(){
             
             Agente Agentes_i;  
             //show_heap(heaps[Esqu_i]);
-            for( i = 0 ; i < Q && heaps[   Esqu_i ].total > 0  ; i++){
+            for( i = 0 ; i < Q  && heaps[   Esqu_i ].total > 0  ; i++){
 
                 Agentes_i = heaps[   Esqu_i ].Agentes[   1  ];
                 if( Agentes_ID[ 34  ].ID == 34){
                     
-                    show_heap(heaps[Agentes_ID[ 34  ].Esquad]);
+                    //show_heap(heaps[Agentes_ID[ 34  ].Esquad]);
                 }
                 
                 Remove_da_heap( &heaps[Esqu_i], 1 );
